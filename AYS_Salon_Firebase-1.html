@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AYS Salon - Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --gold:#B8962E;--gold-l:#D4AF50;--gold-pale:#FBF5E4;--gold-dim:#8A6E1F;
+  --ink:#1C1C1C;--ink-soft:#2E2E2E;--ink-mid:#5A5A5A;--ink-faint:#9A9A9A;
+  --stone:#F4F2EE;--stone-dark:#ECEAE5;--white:#FFFFFF;
+  --green:#2D7A4F;--green-bg:#EAF5EE;--red:#B83232;--red-bg:#FAEAEA;--amber:#A05F0A;--amber-bg:#FDF3E3;
+  --sidebar:240px;--topbar:62px;--bnav:64px;
+  --r:12px;--r-sm:8px;
+  --sh:0 2px 20px rgba(0,0,0,0.07);--sh-lg:0 8px 48px rgba(0,0,0,0.13);
+}
+html,body{height:100%;}
+body{font-family:'DM Sans',sans-serif;background:var(--stone);color:var(--ink);line-height:1.5;font-size:15px;}
+
+/* ===== SCREENS ===== */
+.screen{display:none;} .screen.active{display:flex;}
+
+/* ===== LOGIN ===== */
+#loginScreen{min-height:100vh;align-items:center;justify-content:center;padding:20px;background:var(--stone);position:relative;overflow:hidden;}
+#loginScreen::before{content:'';position:fixed;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(184,150,46,.09) 0%,transparent 70%);pointer-events:none;}
+#loginScreen::after{content:'';position:fixed;bottom:-200px;left:-200px;width:500px;height:500px;background:radial-gradient(circle,rgba(184,150,46,.06) 0%,transparent 70%);pointer-events:none;}
+.login-card{display:flex;width:100%;max-width:880px;background:var(--white);border-radius:20px;box-shadow:var(--sh-lg);overflow:hidden;min-height:560px;}
+.login-left{flex:1;background:var(--ink);padding:56px 44px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+.login-left::before{content:'';position:absolute;right:-80px;top:-80px;width:280px;height:280px;background:radial-gradient(circle,rgba(184,150,46,.15) 0%,transparent 70%);}
+.ll-logo{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;color:#fff;letter-spacing:.04em;line-height:1;}
+.ll-logo span{color:var(--gold);}
+.ll-tag{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.16em;text-transform:uppercase;margin-top:5px;font-weight:300;}
+.ll-features{list-style:none;position:relative;z-index:1;}
+.ll-features li{color:rgba(255,255,255,.65);font-size:13.5px;font-weight:300;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.ll-features li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+.ll-contact{font-size:12px;color:rgba(255,255,255,.3);position:relative;z-index:1;}
+.login-right{flex:1.1;padding:56px 44px;display:flex;flex-direction:column;justify-content:center;}
+.form-head{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+.form-sub{font-size:13.5px;color:var(--ink-faint);font-weight:300;margin-bottom:32px;}
+.form-section{display:none;flex-direction:column;} .form-section.active{display:flex;}
+.fg{margin-bottom:18px;}
+.fg label{display:block;font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:7px;}
+.fg input,.fg select{width:100%;padding:11px 15px;border:1.5px solid var(--stone-dark);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14.5px;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s,box-shadow .2s;}
+.fg input:focus,.fg select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,150,46,.1);}
+.btn-primary{width:100%;padding:13px;background:var(--ink);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:.02em;margin-top:4px;}
+.btn-primary:hover{background:var(--ink-soft);}
+.btn-primary:active{transform:scale(.99);}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed;}
+.form-switch{text-align:center;margin-top:22px;font-size:13.5px;color:var(--ink-faint);}
+.form-switch a{color:var(--gold);text-decoration:none;font-weight:500;cursor:pointer;}
+.form-switch a:hover{text-decoration:underline;}
+.alert-box{padding:11px 15px;border-radius:8px;font-size:13.5px;margin-bottom:16px;display:none;}
+.alert-box.show{display:block;}
+.alert-box.err{background:var(--red-bg);color:var(--red);border:1px solid #f0bcbc;}
+.alert-box.ok{background:var(--green-bg);color:var(--green);border:1px solid #b8e8cc;}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--ink-faint);font-size:12px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--stone-dark);}
+
+/* ===== APP LAYOUT ===== */
+#appScreen{flex-direction:row;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;background:var(--ink);display:flex;flex-direction:column;z-index:100;}
+.sb-brand{padding:26px 22px 18px;border-bottom:1px solid rgba(255,255,255,.07);}
+.sb-logo{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:#fff;letter-spacing:.04em;line-height:1;}
+.sb-logo span{color:var(--gold);}
+.sb-sub{font-size:10.5px;color:rgba(255,255,255,.3);letter-spacing:.14em;text-transform:uppercase;margin-top:3px;}
+.sb-nav{flex:1;padding:14px 10px;overflow-y:auto;}
+.sb-label{font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:14px 12px 7px;}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.6);font-size:13.5px;font-weight:400;transition:all .15s;margin-bottom:2px;text-decoration:none;}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+.nav-item.active{background:rgba(184,150,46,.16);color:var(--gold-l);}
+.nav-item.active .nicon{color:var(--gold);}
+.nicon{width:17px;height:17px;flex-shrink:0;opacity:.85;}
+.nb{margin-left:auto;background:var(--gold);color:var(--ink);font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.sb-user{padding:14px 20px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:11px;}
+.u-av{width:34px;height:34px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--ink);flex-shrink:0;}
+.u-inf{flex:1;min-width:0;}
+.u-name{font-size:12.5px;color:#fff;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.u-role{font-size:10.5px;color:rgba(255,255,255,.32);text-transform:capitalize;}
+.u-out{color:rgba(255,255,255,.35);cursor:pointer;transition:color .15s;flex-shrink:0;}
+.u-out:hover{color:var(--red);}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);min-height:100vh;display:flex;flex-direction:column;flex:1;}
+.topbar{height:var(--topbar);background:var(--white);border-bottom:1px solid var(--stone-dark);display:flex;align-items:center;padding:0 26px;gap:14px;position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);flex:1;}
+.pg{padding:24px;}
+
+/* MOBILE TOPBAR */
+.mob-top{display:none;height:54px;background:var(--ink);align-items:center;padding:0 16px;gap:12px;position:sticky;top:0;z-index:100;}
+.mob-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#fff;}
+.mob-logo span{color:var(--gold);}
+
+/* BOTTOM NAV */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bnav);background:var(--white);border-top:1px solid var(--stone-dark);z-index:100;}
+.bnav-inner{display:flex;align-items:center;justify-content:space-around;height:100%;padding:0 8px;}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 14px;cursor:pointer;color:var(--ink-faint);font-size:10.5px;font-weight:500;border-radius:8px;transition:color .15s;}
+.bn-item.active{color:var(--gold);}
+.bn-item svg{width:22px;height:22px;}
+
+/* PAGE VIEWS */
+.pv{display:none;} .pv.active{display:block;}
+
+/* ===== COMPONENTS ===== */
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-bottom:24px;}
+.stat-card{background:var(--white);border-radius:var(--r);padding:22px;box-shadow:var(--sh);position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:3px;background:var(--gold);}
+.stat-lbl{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:9px;}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:5px;}
+.stat-note{font-size:12.5px;color:var(--ink-faint);}
+
+/* CARDS */
+.card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
+.card-hd{padding:18px 22px 14px;border-bottom:1px solid var(--stone-dark);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ink);}
+.card-bd{padding:22px;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border:none;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;cursor:pointer;transition:all .15s;text-decoration:none;white-space:nowrap;}
+.btn-dark{background:var(--ink);color:#fff;} .btn-dark:hover{background:var(--ink-soft);}
+.btn-gold{background:var(--gold);color:#fff;} .btn-gold:hover{background:var(--gold-l);}
+.btn-out{background:transparent;border:1.5px solid var(--stone-dark);color:var(--ink);} .btn-out:hover{border-color:var(--ink-faint);}
+.btn-del{background:var(--red-bg);color:var(--red);border:1.5px solid #f0bcbc;} .btn-del:hover{background:#f0bcbc;}
+.btn-ok{background:var(--green-bg);color:var(--green);border:1.5px solid #b8e8cc;}
+.btn-sm{padding:6px 13px;font-size:12.5px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* TABLES */
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+thead th{text-align:left;padding:11px 15px;font-size:10.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint);border-bottom:1px solid var(--stone-dark);white-space:nowrap;}
+tbody td{padding:13px 15px;border-bottom:1px solid var(--stone-dark);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--stone);}
+
+/* BADGES */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:500;}
+.b-gold{background:var(--gold-pale);color:var(--gold-dim);}
+.b-green{background:var(--green-bg);color:var(--green);}
+.b-red{background:var(--red-bg);color:var(--red);}
+.b-amber{background:var(--amber-bg);color:var(--amber);}
+.b-grey{background:var(--stone-dark);color:var(--ink-mid);}
+
+/* FORMS */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.fgrid.one{grid-template-columns:1fr;}
+.fgrid.three{grid-template-columns:1fr 1fr 1fr;}
+.fgroup{display:flex;flex-direction:column;gap:6px;}
+.fgroup.full{grid-column:1/-1;}
+.fgroup label{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);}
+.fgroup input,.fgroup select,.fgroup textarea{padding:10px 13px;border:1.5px solid var(--stone-dark);border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s,box-shadow .2s;width:100%;}
+.fgroup input:focus,.fgroup select:focus,.fgroup textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,150,46,.1);}
+.fgroup textarea{resize:vertical;min-height:76px;}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.mo.open{display:flex;}
+.modal{background:var(--white);border-radius:var(--r);box-shadow:var(--sh-lg);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;}
+.modal-lg{max-width:760px;}
+.m-hd{padding:22px 26px 18px;border-bottom:1px solid var(--stone-dark);display:flex;align-items:center;justify-content:space-between;}
+.m-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);}
+.m-close{width:30px;height:30px;border-radius:50%;background:var(--stone);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-mid);transition:all .15s;}
+.m-close:hover{background:var(--stone-dark);color:var(--ink);}
+.m-bd{padding:24px 26px;}
+.m-ft{padding:18px 26px;border-top:1px solid var(--stone-dark);display:flex;justify-content:flex-end;gap:10px;}
+
+/* SEARCH */
+.srch{position:relative;display:flex;align-items:center;}
+.srch input{width:100%;padding:9px 13px 9px 38px;border:1.5px solid var(--stone-dark);border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13.5px;outline:none;transition:border-color .2s;}
+.srch input:focus{border-color:var(--gold);}
+.srch svg{position:absolute;left:11px;color:var(--ink-faint);}
+
+/* BANNER */
+.banner{background:var(--ink);color:#fff;border-radius:var(--r);padding:24px 28px;margin-bottom:22px;position:relative;overflow:hidden;}
+.banner::before{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(184,150,46,.18) 0%,transparent 70%);pointer-events:none;}
+.banner h2{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;margin-bottom:3px;}
+.banner p{color:rgba(255,255,255,.5);font-size:13px;}
+
+/* CHART BAR */
+.cbar-wrap{display:flex;flex-direction:column;gap:9px;margin-top:14px;}
+.cbar-item{display:flex;align-items:center;gap:10px;}
+.cbar-lbl{width:130px;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cbar-track{flex:1;height:7px;background:var(--stone-dark);border-radius:4px;overflow:hidden;}
+.cbar-fill{height:100%;background:var(--gold);border-radius:4px;transition:width .6s ease;}
+.cbar-val{width:70px;font-size:12px;color:var(--ink-mid);text-align:right;}
+
+/* PAGINATION */
+.pages{display:flex;align-items:center;justify-content:center;gap:6px;padding:18px;}
+.pg-btn{width:34px;height:34px;border-radius:var(--r-sm);border:1.5px solid var(--stone-dark);background:var(--white);cursor:pointer;font-size:13.5px;color:var(--ink);display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.pg-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.pg-btn:hover:not(.active){border-color:var(--gold);color:var(--gold);}
+
+/* STATUS DOT */
+.sdot{display:inline-flex;align-items:center;gap:5px;font-size:13px;}
+.sdot::before{content:'';width:7px;height:7px;border-radius:50%;}
+.sdot.approved::before{background:var(--green);}
+.sdot.pending::before{background:var(--amber);}
+.sdot.rejected::before,.sdot.inactive::before{background:var(--red);}
+
+/* WELCOME BANNER */
+.wb{background:var(--ink);color:#fff;border-radius:var(--r);padding:24px 28px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;}
+.wb::before{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(184,150,46,.18) 0%,transparent 70%);pointer-events:none;}
+.wb-text h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;margin-bottom:3px;}
+.wb-text p{color:rgba(255,255,255,.5);font-size:13px;}
+.wb-date{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold-l);text-align:right;position:relative;z-index:1;}
+
+/* PRINT */
+@media print{
+  .sidebar,.mob-top,.topbar,.bnav,.m-ft,.m-hd{display:none!important;}
+  .mo{position:static;background:none;padding:0;}
+  .modal{max-height:none;box-shadow:none;border-radius:0;}
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sidebar{display:none!important;}
+  .main{margin-left:0;padding-bottom:var(--bnav);}
+  .mob-top{display:flex;}
+  .topbar{display:none;}
+  .bnav{display:block;}
+  .pg{padding:14px;}
+  .fgrid{grid-template-columns:1fr;}
+  .fgrid.three{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:12px;}
+  .stat-card{padding:15px;}
+  .stat-val{font-size:24px;}
+  .wb{padding:18px 20px;}
+  .wb-date{display:none;}
+  .mo{align-items:flex-end;padding:0;}
+  .modal{border-radius:16px 16px 0 0;max-height:92vh;}
+  .rpt-grid{grid-template-columns:1fr!important;}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .card-hd{gap:8px;}
+}
+
+/* UTIL */
+.flex{display:flex;} .fb{display:flex;align-items:center;justify-content:space-between;} .fc{display:flex;align-items:center;justify-content:center;}
+.gap8{gap:8px;} .gap12{gap:12px;} .gap16{gap:16px;}
+.mb16{margin-bottom:16px;} .mb20{margin-bottom:20px;} .mb24{margin-bottom:24px;}
+.fw{flex-wrap:wrap;}
+.txt-gold{color:var(--gold);} .txt-grey{color:var(--ink-mid);} .txt-sm{font-size:13px;} .fw6{font-weight:600;}
+.cc{text-align:center;} .w100{width:100%;}
+.empty{text-align:center;padding:48px 20px;color:var(--ink-faint);}
+.empty svg{opacity:.25;margin-bottom:14px;}
+
+.srow-del{height:38px;width:38px;border-radius:8px;border:1.5px solid #f0bcbc;background:var(--red-bg);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* INVOICE STYLES */
+.inv-wrap{font-family:'DM Sans',sans-serif;max-width:580px;margin:0 auto;padding:16px;}
+.inv-header{text-align:center;padding-bottom:18px;margin-bottom:18px;border-bottom:2px solid var(--ink);}
+.inv-salon{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;letter-spacing:.04em;color:var(--ink);}
+.inv-tag{font-size:13px;color:var(--ink-faint);margin-top:3px;}
+.inv-meta{display:flex;justify-content:space-between;margin-bottom:18px;}
+.inv-to .lbl,.inv-num .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:4px;}
+.inv-to .name{font-weight:600;font-size:16px;}
+.inv-to .phone{color:var(--ink-mid);font-size:14px;}
+.inv-num{text-align:right;}
+.inv-num .bnum{font-weight:700;font-size:16px;color:var(--gold);}
+.inv-num .bdate{color:var(--ink-mid);font-size:13px;}
+.inv-table{width:100%;border-collapse:collapse;margin-bottom:18px;}
+.inv-table thead tr{background:var(--ink);color:#fff;}
+.inv-table th{padding:9px 13px;font-size:11.5px;letter-spacing:.05em;}
+.inv-table th:last-child,.inv-table td:last-child{text-align:right;}
+.inv-table th:nth-child(2),.inv-table td:nth-child(2){text-align:center;}
+.inv-table td{padding:9px 13px;font-size:13.5px;}
+.inv-table tbody tr:nth-child(even){background:var(--stone);}
+.inv-totals{display:flex;justify-content:flex-end;margin-bottom:12px;}
+.inv-totals-inner{width:220px;}
+.inv-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13.5px;color:var(--ink-mid);}
+.inv-total-row{display:flex;justify-content:space-between;padding:10px 0;font-size:17px;font-weight:700;border-top:2px solid var(--ink);margin-top:5px;}
+.inv-total-row span:last-child{color:var(--gold);}
+.inv-payment{font-size:13px;color:var(--ink-mid);margin-top:5px;text-align:right;}
+.inv-footer{text-align:center;margin-top:18px;padding-top:14px;border-top:1px solid var(--stone-dark);font-size:12.5px;color:var(--ink-faint);}
+.inv-note{margin-top:12px;padding:10px 13px;background:var(--stone);border-radius:8px;font-size:13px;color:var(--ink-mid);}
+
+/* NOTIF DROPDOWN */
+.nd{position:absolute;top:52px;right:0;width:300px;background:var(--white);border-radius:var(--r);box-shadow:var(--sh-lg);border:1px solid var(--stone-dark);overflow:hidden;display:none;z-index:300;}
+.nd.open{display:block;}
+.nd-item{padding:13px 16px;border-bottom:1px solid var(--stone-dark);font-size:13px;}
+.nd-item:last-child{border-bottom:none;}
+.nd-item.unread{background:var(--gold-pale);}
+.nd-time{font-size:11px;color:var(--ink-faint);margin-top:3px;}
+</style>
+</head>
+<body>
+
+<!-- ==================== LOGIN SCREEN ==================== -->
+<div id="loginScreen" class="screen active">
+  <div class="login-card">
+    <div class="login-left">
+      <div>
+        <div class="ll-logo">AYS<span>.</span></div>
+        <div class="ll-tag">Premium Grooming Studio</div>
+      </div>
+      <ul class="ll-features">
+        <li>Professional billing and invoicing</li>
+        <li>Customer management and history</li>
+        <li>Daily, weekly and monthly reports</li>
+        <li>Employee management system</li>
+        <li>Multi-payment mode support</li>
+        <li>WhatsApp invoice sharing</li>
+      </ul>
+      <div class="ll-contact">AYS Salon &nbsp;|&nbsp; +91 7505484168</div>
+    </div>
+    <div class="login-right">
+      <!-- LOGIN -->
+      <div class="form-section active" id="fs-login">
+        <div class="form-head">Welcome back</div>
+        <div class="form-sub">Sign in to your salon dashboard</div>
+        <div class="alert-box err" id="loginErr"></div>
+        <div class="alert-box ok" id="loginOk"></div>
+        <div class="fg"><label>Email Address</label><input type="email" id="liEmail" placeholder="you@example.com"></div>
+        <div class="fg"><label>Password</label><input type="password" id="liPass" placeholder="Your password"></div>
+        <button class="btn-primary" id="liBtn" onclick="doLogin()">Sign In</button>
+        <div class="divider">or</div>
+        <div class="form-switch">New employee? <a onclick="showFS('register')">Register here</a></div>
+      </div>
+      <!-- REGISTER -->
+      <div class="form-section" id="fs-register">
+        <div class="form-head">Create Account</div>
+        <div class="form-sub">Register as AYS Salon employee</div>
+        <div class="alert-box err" id="regErr"></div>
+        <div class="alert-box ok" id="regOk"></div>
+        <div class="fg"><label>Full Name</label><input type="text" id="reName" placeholder="Your full name"></div>
+        <div class="fg"><label>Mobile Number</label><input type="tel" id="reMob" placeholder="10-digit mobile" maxlength="10"></div>
+        <div class="fg"><label>Email Address</label><input type="email" id="reEmail" placeholder="you@example.com"></div>
+        <div class="fg"><label>Password</label><input type="password" id="rePass" placeholder="Min 6 characters"></div>
+        <button class="btn-primary" id="reBtn" onclick="doRegister()">Submit Registration</button>
+        <div class="form-switch">Already have account? <a onclick="showFS('login')">Sign in</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== APP SCREEN ==================== -->
+<div id="appScreen" class="screen">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo">AYS<span>.</span></div>
+      <div class="sb-sub" id="sb-sub">Management System</div>
+    </div>
+    <div class="sb-nav" id="sbnav"><!-- injected by JS --></div>
+    <div class="sb-user">
+      <div class="u-av" id="uAv">A</div>
+      <div class="u-inf">
+        <div class="u-name" id="uName">User</div>
+        <div class="u-role" id="uRole">Staff</div>
+      </div>
+    </div>
+    <div style="padding:0 12px 16px;">
+      <button onclick="logout()" style="width:100%;padding:10px;background:rgba(184,50,50,0.12);color:#e06060;border:1.5px solid rgba(184,50,50,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;" onmouseover="this.style.background='rgba(184,50,50,0.22)'" onmouseout="this.style.background='rgba(184,50,50,0.12)'">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- Mobile Topbar -->
+    <div class="mob-top">
+      <div class="mob-logo">AYS<span>.</span></div>
+      <div style="flex:1"></div>
+      <button onclick="logout()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:7px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Logout
+      </button>
+    </div>
+
+    <!-- Desktop Topbar -->
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="flex gap12" style="align-items:center;">
+        <div style="position:relative;">
+          <button class="btn btn-out btn-sm" onclick="toggleND()" id="ndBtn" style="position:relative;">
+            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="ndDot" style="display:none;position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--gold);border-radius:50%;border:2px solid #fff;"></span>
+          </button>
+          <div class="nd" id="ndDrop">
+            <div style="padding:12px 16px;border-bottom:1px solid var(--stone-dark);display:flex;justify-content:space-between;align-items:center;">
+              <strong style="font-size:13.5px;">Notifications</strong>
+              <a onclick="markAllRead()" style="font-size:12px;color:var(--gold);cursor:pointer;">Mark read</a>
+            </div>
+            <div id="ndList"></div>
+          </div>
+        </div>
+        <button class="btn btn-dark btn-sm" onclick="showPage('billing')" id="newBillTopBtn">
+          <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke-width="2" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-width="2" stroke-linecap="round"/></svg>
+          New Bill
+        </button>
+        <button class="btn btn-sm" onclick="logout()" style="background:var(--red-bg);color:var(--red);border:1.5px solid #f0bcbc;">
+          <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <div class="pg">
+
+      <!-- ====== DASHBOARD ====== -->
+      <div class="pv active" id="pv-dashboard">
+        <div class="wb">
+          <div class="wb-text">
+            <h2>Good <span id="greet">morning</span>, <span id="wbName">Admin</span></h2>
+            <p>Here is what is happening at AYS Salon today</p>
+          </div>
+          <div class="wb-date" id="wbDate"></div>
+        </div>
+        <div class="stats-grid" id="dashStats"></div>
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Recent Bills</div>
+            <button class="btn btn-out btn-sm" onclick="showPage('bills')">View All</button>
+          </div>
+          <div class="tw"><table><thead><tr><th>Bill No.</th><th>Customer</th><th>Amount</th><th>Payment</th><th>Date</th></tr></thead><tbody id="dashBills"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ====== BILLING ====== -->
+      <div class="pv" id="pv-billing">
+        <div class="card">
+          <div class="card-hd"><div class="card-title">Create New Bill</div></div>
+          <div class="card-bd">
+            <div class="alert-box err mb20" id="bErr"></div>
+            <div class="alert-box ok mb20" id="bOk"></div>
+
+            <div class="mb24">
+              <div style="font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px;">Customer Details</div>
+              <div class="fgrid">
+                <div class="fgroup" style="position:relative;">
+                  <label>Customer Mobile</label>
+                  <input type="tel" id="bMob" placeholder="Search by mobile..." maxlength="10" oninput="custSearch(this.value,'bSug')">
+                  <div id="bSug" style="position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--stone-dark);border-radius:8px;box-shadow:var(--sh);z-index:50;display:none;margin-top:2px;"></div>
+                </div>
+                <div class="fgroup"><label>Customer Name</label><input type="text" id="bName" placeholder="Full name"></div>
+                <div class="fgroup"><label>Date</label><input type="date" id="bDate"></div>
+                <div class="fgroup"><label>Notes (Optional)</label><input type="text" id="bNotes" placeholder="Any notes..."></div>
+              </div>
+            </div>
+
+            <div class="mb24">
+              <div class="fb mb16">
+                <div style="font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);">Services</div>
+                <button class="btn btn-out btn-sm" onclick="addSrow()">+ Add Row</button>
+              </div>
+              <div id="sRows"></div>
+              <div style="margin-top:10px;">
+                <select id="qPicker" style="padding:9px 13px;border:1.5px solid var(--stone-dark);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink-mid);width:100%;" onchange="addFromPicker()">
+                  <option value="">-- Quick add from service list --</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="background:var(--stone);border-radius:var(--r);padding:18px;margin-bottom:22px;">
+              <div class="fgrid">
+                <div class="fgroup"><label>Discount</label><input type="number" id="bDisc" value="0" min="0" oninput="recalc()"></div>
+                <div class="fgroup"><label>Discount Type</label><select id="bDiscType" onchange="recalc()"><option value="flat">Flat (Rs.)</option><option value="percent">Percent (%)</option></select></div>
+                <div class="fgroup"><label>Payment Mode</label><select id="bPay" onchange="toggleSplit()"><option value="cash">Cash</option><option value="online">Online / UPI</option><option value="split">Split (Cash + Online)</option></select></div>
+              </div>
+              <div id="splitRow" style="display:none;margin-top:14px;">
+                <div class="fgrid">
+                  <div class="fgroup"><label>Cash Amount</label><input type="number" id="bCash" value="0" min="0" oninput="recalc()"></div>
+                  <div class="fgroup"><label>Online Amount</label><input type="number" id="bOnline" value="0" min="0" oninput="recalc()"></div>
+                </div>
+              </div>
+              <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--stone-dark);display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                  <div style="font-size:13px;color:var(--ink-mid);">Subtotal: <strong id="rSub">Rs. 0</strong></div>
+                  <div style="font-size:13px;color:var(--ink-mid);">Discount: <strong id="rDisc">Rs. 0</strong></div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);margin-bottom:3px;">Total Amount</div>
+                  <div style="font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:var(--ink);" id="rTotal">Rs. 0</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+              <button class="btn btn-out" onclick="clearBill()">Clear</button>
+              <button class="btn btn-dark" id="saveBillBtn" onclick="saveBill()">Save Bill</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== ALL BILLS ====== -->
+      <div class="pv" id="pv-bills">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">All Bills</div>
+            <div class="flex gap8 fw" style="align-items:center;">
+              <input type="date" id="bfFrom" style="padding:7px 11px;border:1.5px solid var(--stone-dark);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;" oninput="loadBills()">
+              <span style="color:var(--ink-faint);font-size:13px;">to</span>
+              <input type="date" id="bfTo" style="padding:7px 11px;border:1.5px solid var(--stone-dark);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;" oninput="loadBills()">
+              <div class="srch" style="width:190px;"><svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.5"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.5" stroke-linecap="round"/></svg><input type="text" id="billSrch" placeholder="Search..." oninput="loadBills()"></div>
+              <button class="btn btn-out btn-sm" onclick="exportBillsCSV()">Export CSV</button>
+            </div>
+          </div>
+          <div class="tw"><table><thead><tr><th>Bill No.</th><th>Customer</th><th>Amount</th><th>Discount</th><th>Payment</th><th>Date</th><th>By</th><th>Actions</th></tr></thead><tbody id="billsTbody"></tbody></table></div>
+          <div class="pages" id="billPages"></div>
+        </div>
+      </div>
+
+      <!-- ====== CUSTOMERS ====== -->
+      <div class="pv" id="pv-customers">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Customers</div>
+            <div class="flex gap8" style="align-items:center;">
+              <div class="srch" style="width:220px;"><svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="1.5"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="1.5" stroke-linecap="round"/></svg><input type="text" id="custSrch" placeholder="Search name or mobile..." oninput="loadCustomers()"></div>
+              <button class="btn btn-dark btn-sm" onclick="openModal('mAddCust')">+ Add Customer</button>
+            </div>
+          </div>
+          <div class="tw"><table><thead><tr><th>Name</th><th>Mobile</th><th>Visits</th><th>Total Spent</th><th>Last Visit</th><th>Actions</th></tr></thead><tbody id="custTbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ====== EMPLOYEES (Admin only) ====== -->
+      <div class="pv" id="pv-employees">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Employees</div>
+            <button class="btn btn-dark btn-sm" onclick="openModal('mAddEmp')">+ Add Employee</button>
+          </div>
+          <div class="tw"><table><thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead><tbody id="empTbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ====== SERVICES (Admin only) ====== -->
+      <div class="pv" id="pv-services">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Services &amp; Pricing</div>
+            <button class="btn btn-dark btn-sm" onclick="openAddSvcModal()">+ Add Service</button>
+          </div>
+          <div class="tw"><table><thead><tr><th>Service Name</th><th>Category</th><th>Price</th><th>Duration</th><th>Status</th><th>Actions</th></tr></thead><tbody id="svcTbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ====== REPORTS (Admin only) ====== -->
+      <div class="pv" id="pv-reports">
+        <div class="fb mb20 fw gap8">
+          <div class="flex gap8 fw">
+            <button class="btn btn-out btn-sm" id="rBtnD" onclick="loadReports('daily')">Today</button>
+            <button class="btn btn-out btn-sm" id="rBtnW" onclick="loadReports('weekly')">This Week</button>
+            <button class="btn btn-out btn-sm" id="rBtnM" onclick="loadReports('monthly')">This Month</button>
+            <button class="btn btn-out btn-sm" id="rBtnY" onclick="loadReports('yearly')">This Year</button>
+          </div>
+          <div class="flex gap8">
+            <button class="btn btn-out btn-sm" onclick="exportRptCSV()">Export CSV</button>
+            <button class="btn btn-dark btn-sm" onclick="window.print()">Print</button>
+          </div>
+        </div>
+        <div class="stats-grid" id="rptStats"></div>
+        <div class="rpt-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Top Services</div></div>
+            <div class="card-bd"><div class="cbar-wrap" id="rptSvcChart"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Top Customers</div></div>
+            <div class="card-bd"><div class="cbar-wrap" id="rptCustChart"></div></div>
+          </div>
+          <div class="card" style="grid-column:1/-1;">
+            <div class="card-hd"><div class="card-title">Employee Performance</div></div>
+            <div class="tw"><table><thead><tr><th>Employee</th><th>Bills</th><th>Revenue</th></tr></thead><tbody id="rptEmpBody"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== SETTINGS (Admin only) ====== -->
+      <div class="pv" id="pv-settings">
+        <div class="card">
+          <div class="card-hd"><div class="card-title">Salon Settings</div></div>
+          <div class="card-bd">
+            <div class="alert-box ok mb20" id="setOk"></div>
+            <div class="fgrid">
+              <div class="fgroup"><label>Salon Name</label><input type="text" id="set_salon_name"></div>
+              <div class="fgroup"><label>Phone</label><input type="text" id="set_phone"></div>
+              <div class="fgroup"><label>Email</label><input type="email" id="set_email"></div>
+              <div class="fgroup"><label>WhatsApp Number</label><input type="text" id="set_whatsapp"></div>
+              <div class="fgroup full"><label>Address</label><input type="text" id="set_address"></div>
+              <div class="fgroup full"><label>Tagline</label><input type="text" id="set_tagline"></div>
+              <div class="fgroup"><label>Bill Prefix</label><input type="text" id="set_prefix"></div>
+              <div class="fgroup"><label>Currency Symbol</label><input type="text" id="set_currency"></div>
+              <div class="fgroup"><label>GST Number</label><input type="text" id="set_gst"></div>
+              <div class="fgroup"><label>GST %</label><input type="number" id="set_gst_pct" min="0" max="100"></div>
+              <div class="fgroup full"><label>Invoice Footer Note</label><input type="text" id="set_footer"></div>
+            </div>
+            <div style="margin-top:22px;display:flex;justify-content:flex-end;">
+              <button class="btn btn-dark" onclick="saveSettings()">Save Settings</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /pg -->
+
+    <!-- BOTTOM NAV -->
+    <nav class="bnav">
+      <div class="bnav-inner" id="bnavInner"><!-- injected --></div>
+    </nav>
+  </div><!-- /main -->
+<!-- MORE MENU (Mobile Admin) -->
+<div id="moreMenu" style="display:none;position:fixed;bottom:72px;left:0;right:0;z-index:150;padding:0 12px;">
+  <div style="background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--stone-dark);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);">More Options</div>
+    <div onclick="showPage('customers');toggleMoreMenu()" style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid var(--stone-dark);cursor:pointer;font-size:15px;font-weight:500;" onmouseover="this.style.background='var(--stone)'" onmouseout="this.style.background=''">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Customers
+    </div>
+    <div onclick="showPage('reports');toggleMoreMenu()" style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid var(--stone-dark);cursor:pointer;font-size:15px;font-weight:500;" onmouseover="this.style.background='var(--stone)'" onmouseout="this.style.background=''">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Reports
+    </div>
+    <div onclick="showPage('settings');toggleMoreMenu()" style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid var(--stone-dark);cursor:pointer;font-size:15px;font-weight:500;" onmouseover="this.style.background='var(--stone)'" onmouseout="this.style.background=''">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="1.5"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke-width="1.5"/></svg>
+      Settings
+    </div>
+    <div onclick="logout()" style="display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;font-size:15px;font-weight:500;color:#c0392b;" onmouseover="this.style.background='var(--red-bg)'" onmouseout="this.style.background=''">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Logout
+    </div>
+  </div>
+</div>
+<div id="moreOverlay" style="display:none;position:fixed;inset:0;z-index:140;" onclick="toggleMoreMenu()"></div>
+
+</div><!-- /appScreen -->
+
+<!-- ==================== MODALS ==================== -->
+
+<!-- Invoice -->
+<div class="mo" id="mInvoice">
+  <div class="modal modal-lg">
+    <div class="m-hd">
+      <div class="m-title">Invoice</div>
+      <button class="m-close" onclick="closeModal('mInvoice')"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="m-bd" id="invBody"></div>
+    <div class="m-ft">
+      <button class="btn btn-out" onclick="shareWA()">WhatsApp</button>
+      <button class="btn btn-out" onclick="window.print()">Print</button>
+      <button class="btn btn-dark" onclick="closeModal('mInvoice')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Employee -->
+<div class="mo" id="mAddEmp">
+  <div class="modal">
+    <div class="m-hd"><div class="m-title">Add Employee</div><button class="m-close" onclick="closeModal('mAddEmp')"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+    <div class="m-bd">
+      <div class="alert-box err mb20" id="empErr"></div>
+      <div class="fgrid">
+        <div class="fgroup full"><label>Full Name</label><input type="text" id="eName"></div>
+        <div class="fgroup"><label>Email</label><input type="email" id="eEmail"></div>
+        <div class="fgroup"><label>Mobile</label><input type="tel" id="eMob" maxlength="10"></div>
+        <div class="fgroup full"><label>Password</label><input type="password" id="ePass"></div>
+      </div>
+    </div>
+    <div class="m-ft"><button class="btn btn-out" onclick="closeModal('mAddEmp')">Cancel</button><button class="btn btn-dark" onclick="createEmployee()">Create Employee</button></div>
+  </div>
+</div>
+
+<!-- Add Service -->
+<div class="mo" id="mAddSvc">
+  <div class="modal">
+    <div class="m-hd"><div class="m-title" id="svcModalTitle">Add Service</div><button class="m-close" onclick="closeModal('mAddSvc')"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+    <div class="m-bd">
+      <div class="alert-box err mb20" id="svcErr"></div>
+      <input type="hidden" id="svcEditId">
+      <div class="fgrid">
+        <div class="fgroup full"><label>Service Name</label><input type="text" id="svcName"></div>
+        <div class="fgroup"><label>Category</label><input type="text" id="svcCat" placeholder="Hair, Skin, Beard..."></div>
+        <div class="fgroup"><label>Price (Rs.)</label><input type="number" id="svcPrice" min="0"></div>
+        <div class="fgroup"><label>Duration (minutes)</label><input type="number" id="svcDur" min="0" placeholder="Optional"></div>
+      </div>
+    </div>
+    <div class="m-ft"><button class="btn btn-out" onclick="closeModal('mAddSvc')">Cancel</button><button class="btn btn-dark" onclick="saveService()">Save</button></div>
+  </div>
+</div>
+
+<!-- Add Customer -->
+<div class="mo" id="mAddCust">
+  <div class="modal">
+    <div class="m-hd"><div class="m-title">Add Customer</div><button class="m-close" onclick="closeModal('mAddCust')"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+    <div class="m-bd">
+      <div class="alert-box err mb20" id="custErr"></div>
+      <div class="fgrid">
+        <div class="fgroup full"><label>Full Name</label><input type="text" id="cName"></div>
+        <div class="fgroup"><label>Mobile</label><input type="tel" id="cMob" maxlength="10"></div>
+        <div class="fgroup"><label>Email (Optional)</label><input type="email" id="cEmail"></div>
+        <div class="fgroup"><label>Gender</label><select id="cGen"><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div>
+      </div>
+    </div>
+    <div class="m-ft"><button class="btn btn-out" onclick="closeModal('mAddCust')">Cancel</button><button class="btn btn-dark" onclick="addCustomer()">Add Customer</button></div>
+  </div>
+</div>
+
+<!-- Customer History -->
+<div class="mo" id="mCustHist">
+  <div class="modal modal-lg">
+    <div class="m-hd"><div class="m-title" id="chTitle">Customer History</div><button class="m-close" onclick="closeModal('mCustHist')"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+    <div class="m-bd" id="chBody"></div>
+  </div>
+</div>
+
+<script type="module">
+// ================================================================
+//  AYS SALON — FIREBASE EDITION
+//  Data stored in Firebase Firestore + Firebase Auth
+// ================================================================
+
+// ============================================================
+//  🔥 FIREBASE CONFIG — Apna config yahan replace karein
+// ============================================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc,
+  collection, getDocs, addDoc, query, where, orderBy, limit,
+  serverTimestamp, writeBatch, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBbCFAwu8rem4mpW_buWDSG2j2xkfXXl_c",
+  authDomain: "ays-salon.firebaseapp.com",
+  projectId: "ays-salon",
+  storageBucket: "ays-salon.firebasestorage.app",
+  messagingSenderId: "484657278225",
+  appId: "1:484657278225:web:9336a90008337453eb30b0",
+  measurementId: "G-8HLJVWNLJQ"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ================================================================
+//  AYS SALON — FIREBASE EDITION
+// ================================================================
+
+// ---- DEFAULTS ----
+const DEFAULT_ADMIN = { id:'N2Sd4LUWHIe0fv80jVSc1BbbhVH3', name:'Super Admin', email:'sarimforbusiness@gmail.com', password:'sarimgamerz', role:'superadmin', status:'approved', mobile:'7505484168', created_at: new Date().toISOString() };
+
+const DEFAULT_SERVICES = [
+  {id:'svc-1',name:'Haircut - Men',category:'Hair',price:200,duration:30,active:true},
+  {id:'svc-2',name:'Haircut - Women',category:'Hair',price:400,duration:45,active:true},
+  {id:'svc-3',name:'Hair Color - Men',category:'Hair',price:800,duration:60,active:true},
+  {id:'svc-4',name:'Hair Color - Women',category:'Hair',price:1500,duration:90,active:true},
+  {id:'svc-5',name:'Beard Trim',category:'Beard',price:100,duration:15,active:true},
+  {id:'svc-6',name:'Beard Style',category:'Beard',price:200,duration:30,active:true},
+  {id:'svc-7',name:'Facial - Basic',category:'Skin',price:500,duration:45,active:true},
+  {id:'svc-8',name:'Facial - Premium',category:'Skin',price:1000,duration:60,active:true},
+  {id:'svc-9',name:'Head Massage',category:'Massage',price:300,duration:30,active:true},
+  {id:'svc-10',name:'Manicure',category:'Nails',price:400,duration:45,active:true},
+  {id:'svc-11',name:'Pedicure',category:'Nails',price:500,duration:60,active:true},
+  {id:'svc-12',name:'Eyebrow Threading',category:'Threading',price:50,duration:10,active:true},
+  {id:'svc-13',name:'Hair Spa',category:'Hair',price:600,duration:60,active:true},
+  {id:'svc-14',name:'Bridal Makeup',category:'Makeup',price:5000,duration:120,active:true},
+  {id:'svc-15',name:'Party Makeup',category:'Makeup',price:2000,duration:60,active:true},
+  {id:'svc-16',name:'Waxing - Full Arms',category:'Waxing',price:300,duration:30,active:true},
+  {id:'svc-17',name:'Waxing - Full Legs',category:'Waxing',price:400,duration:45,active:true},
+  {id:'svc-18',name:'Keratin Treatment',category:'Hair',price:2500,duration:120,active:true},
+  {id:'svc-19',name:'Upper Lip Threading',category:'Threading',price:30,duration:5,active:true},
+  {id:'svc-20',name:'Body Massage',category:'Massage',price:800,duration:60,active:true},
+];
+
+const DEFAULT_SETTINGS = {
+  salon_name:'AYS Salon', phone:'7505484168', email:'sarimforbusiness@gmail.com',
+  whatsapp:'7505484168', address:'Your Salon Address Here',
+  tagline:'Premium Grooming & Beauty Studio', prefix:'AYS', currency:'Rs.',
+  gst:'', gst_pct:'0', footer:'Thank you for visiting AYS Salon!'
+};
+
+// ================================================================
+//  IN-MEMORY CACHE (Firestore se load hoga startup par)
+// ================================================================
+const CACHE = {
+  users: [], bills: [], customers: [], services: [], settings: {}, notifications: [], bill_counter: 0
+};
+
+// ---- FIRESTORE HELPERS ----
+async function fbGet(col) {
+  const snap = await getDocs(collection(db, col));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+async function fbSet(col, id, data) {
+  await setDoc(doc(db, col, id), data, { merge: true });
+}
+async function fbAdd(col, data) {
+  const ref = await addDoc(collection(db, col), data);
+  return ref.id;
+}
+async function fbUpdate(col, id, data) {
+  await updateDoc(doc(db, col, id), data);
+}
+async function fbDelete(col, id) {
+  await deleteDoc(doc(db, col, id));
+}
+async function fbGetDoc(col, id) {
+  const snap = await getDoc(doc(db, col, id));
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+}
+
+// ---- LEGACY LS SHIM (synchronous cache reads) ----
+const LS = {
+  get:(k, def) => {
+    if (k === 'users') return CACHE.users.length ? CACHE.users : (def !== undefined ? def : []);
+    if (k === 'bills') return CACHE.bills;
+    if (k === 'customers') return CACHE.customers;
+    if (k === 'services') return CACHE.services;
+    if (k === 'settings') return Object.keys(CACHE.settings).length ? CACHE.settings : (def !== undefined ? def : DEFAULT_SETTINGS);
+    if (k === 'notifications') return CACHE.notifications;
+    if (k === 'bill_counter') return CACHE.bill_counter;
+    if (k === 'session') return sessionStorage.getItem('ays_session') || (def !== undefined ? def : null);
+    if (k === 'inited') return CACHE._inited || false;
+    return def !== undefined ? def : [];
+  },
+  set:(k, v) => {
+    // Session stored locally, rest synced to Firebase via explicit save functions
+    if (k === 'session') { if(v) sessionStorage.setItem('ays_session', v); else sessionStorage.removeItem('ays_session'); return; }
+    if (k === 'inited') { CACHE._inited = v; return; }
+    // These are handled by explicit Firebase saves; just update cache
+    if (k === 'users') { CACHE.users = v; return; }
+    if (k === 'bills') { CACHE.bills = v; return; }
+    if (k === 'customers') { CACHE.customers = v; return; }
+    if (k === 'services') { CACHE.services = v; return; }
+    if (k === 'settings') { CACHE.settings = v; return; }
+    if (k === 'notifications') { CACHE.notifications = v; return; }
+    if (k === 'bill_counter') { CACHE.bill_counter = v; return; }
+  }
+};
+
+// ================================================================
+//  FIREBASE INIT & DATA LOAD
+// ================================================================
+async function initData() {
+  // Show loading
+  document.getElementById('loginScreen').innerHTML += `<div id="fbLoader" style="position:fixed;inset:0;background:rgba(255,255,255,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;font-family:'DM Sans',sans-serif;"><div style="font-size:22px;font-weight:600;color:#1C1C1C;margin-bottom:8px;">AYS Salon</div><div style="font-size:14px;color:#9A9A9A;">Loading data...</div></div>`;
+
+  try {
+    // Load all collections into cache
+    const [users, bills, customers, services, notifs] = await Promise.all([
+      fbGet('users'), fbGet('bills'), fbGet('customers'), fbGet('services'), fbGet('notifications')
+    ]);
+    CACHE.users = users;
+    CACHE.bills = bills;
+    CACHE.customers = customers;
+    CACHE.services = services;
+    CACHE.notifications = notifs;
+
+    // Settings doc
+    const settingsDoc = await fbGetDoc('config', 'settings');
+    CACHE.settings = settingsDoc || { ...DEFAULT_SETTINGS };
+
+    // Bill counter
+    const counterDoc = await fbGetDoc('config', 'counter');
+    CACHE.bill_counter = counterDoc ? (counterDoc.value || 0) : 0;
+
+    // Seed default data if first time
+    if (!CACHE.users.length && !CACHE.services.length) {
+      await seedDefaultData();
+    }
+
+    CACHE._inited = true;
+  } catch(e) {
+    console.error('Firebase load error:', e);
+    alert('Firebase connect nahi ho saka. Apna firebaseConfig check karein.\n\n' + e.message);
+  }
+
+  const loader = document.getElementById('fbLoader');
+  if (loader) loader.remove();
+}
+
+async function seedDefaultData() {
+  // Seed admin user
+  await fbSet('users', DEFAULT_ADMIN.id, DEFAULT_ADMIN);
+  CACHE.users = [DEFAULT_ADMIN];
+
+  // Seed services
+  const batch = writeBatch(db);
+  DEFAULT_SERVICES.forEach(s => batch.set(doc(db, 'services', s.id), s));
+  await batch.commit();
+  CACHE.services = [...DEFAULT_SERVICES];
+
+  // Seed settings
+  await fbSet('config', 'settings', DEFAULT_SETTINGS);
+  CACHE.settings = { ...DEFAULT_SETTINGS };
+
+  // Seed counter
+  await fbSet('config', 'counter', { value: 0 });
+}
+
+// ---- FIREBASE SAVE FUNCTIONS ----
+async function fbSaveUsers(users) {
+  CACHE.users = users;
+  const batch = writeBatch(db);
+  // Get existing IDs
+  const existing = (await fbGet('users')).map(u => u.id);
+  users.forEach(u => batch.set(doc(db, 'users', u.id), u));
+  // Delete removed
+  existing.filter(id => !users.find(u => u.id === id)).forEach(id => batch.delete(doc(db, 'users', id)));
+  await batch.commit();
+}
+
+async function fbSaveOneUser(user) {
+  CACHE.users = CACHE.users.map(u => u.id === user.id ? user : u);
+  if (!CACHE.users.find(u => u.id === user.id)) CACHE.users.push(user);
+  await fbSet('users', user.id, user);
+}
+
+async function fbSaveOneBill(bill) {
+  CACHE.bills.push(bill);
+  await fbSet('bills', bill.id, bill);
+  // Update counter
+  await fbSet('config', 'counter', { value: CACHE.bill_counter });
+}
+
+async function fbDeleteBill(id) {
+  CACHE.bills = CACHE.bills.filter(b => b.id !== id);
+  await fbDelete('bills', id);
+}
+
+async function fbSaveCustomers(customers) {
+  CACHE.customers = customers;
+}
+async function fbSaveOneCustomer(cust) {
+  const idx = CACHE.customers.findIndex(c => c.id === cust.id);
+  if (idx > -1) CACHE.customers[idx] = cust; else CACHE.customers.push(cust);
+  await fbSet('customers', cust.id, cust);
+}
+
+async function fbSaveServices(services) {
+  CACHE.services = services;
+  const batch = writeBatch(db);
+  const existing = (await fbGet('services')).map(s => s.id);
+  services.forEach(s => batch.set(doc(db, 'services', s.id), s));
+  existing.filter(id => !services.find(s => s.id === id)).forEach(id => batch.delete(doc(db, 'services', id)));
+  await batch.commit();
+}
+async function fbSaveOneService(svc) {
+  const idx = CACHE.services.findIndex(s => s.id === svc.id);
+  if (idx > -1) CACHE.services[idx] = svc; else CACHE.services.push(svc);
+  await fbSet('services', svc.id, svc);
+}
+async function fbDeleteService(id) {
+  CACHE.services = CACHE.services.filter(s => s.id !== id);
+  await fbDelete('services', id);
+}
+
+async function fbSaveSettings(settings) {
+  CACHE.settings = settings;
+  await fbSet('config', 'settings', settings);
+}
+
+async function fbSaveNotifications(notifs) {
+  CACHE.notifications = notifs;
+  // Save only latest 50 to Firestore (batch)
+  const batch = writeBatch(db);
+  notifs.slice(0, 50).forEach(n => batch.set(doc(db, 'notifications', n.id), n));
+  await batch.commit();
+}
+
+// ---- STATE ----
+let currentUser = null;
+let lastBillData = null;
+let srowCount = 0;
+let currentPage = 1;
+const BILLS_PER_PAGE = 20;
+let rptCache = null;
+
+// ================================================================
+//  AUTH
+// ================================================================
+function showFS(name){
+  document.querySelectorAll('.form-section').forEach(el=>el.classList.remove('active'));
+  document.getElementById('fs-'+name).classList.add('active');
+}
+
+function doLogin(){
+  const email = document.getElementById('liEmail').value.trim();
+  const pass  = document.getElementById('liPass').value.trim();
+  if(!email||!pass){showA('loginErr','Email and password required.');return;}
+
+  const btn = document.getElementById('liBtn');
+  btn.disabled = true; btn.textContent = 'Signing in...';
+
+  signInWithEmailAndPassword(auth, email, pass)
+    .then(async (cred) => {
+      // Get user profile from Firestore
+      const user = CACHE.users.find(u => u.email === email);
+      if(!user){
+        showA('loginErr','User profile not found. Contact admin.');
+        btn.disabled=false; btn.textContent='Sign In';
+        return;
+      }
+      if(user.status==='pending'){showA('loginErr','Account pending admin approval.');btn.disabled=false;btn.textContent='Sign In';return;}
+      if(user.status==='rejected'){showA('loginErr','Your registration was rejected.');btn.disabled=false;btn.textContent='Sign In';return;}
+      if(user.status==='inactive'){showA('loginErr','Account deactivated. Contact admin.');btn.disabled=false;btn.textContent='Sign In';return;}
+
+      currentUser = user;
+      LS.set('session', user.id);
+      btn.disabled=false; btn.textContent='Sign In';
+      startApp();
+    })
+    .catch(err => {
+      let msg = 'Invalid email or password.';
+      if(err.code==='auth/too-many-requests') msg='Too many attempts. Try again later.';
+      showA('loginErr', msg);
+      btn.disabled=false; btn.textContent='Sign In';
+    });
+}
+
+function doRegister(){
+  const name  = document.getElementById('reName').value.trim();
+  const mob   = document.getElementById('reMob').value.trim();
+  const email = document.getElementById('reEmail').value.trim();
+  const pass  = document.getElementById('rePass').value.trim();
+
+  if(!name||!mob||!email||!pass){showA('regErr','All fields required.');return;}
+  if(mob.length!==10){showA('regErr','Enter valid 10-digit mobile.');return;}
+  if(pass.length<6){showA('regErr','Password must be at least 6 characters.');return;}
+
+  const btn = document.getElementById('reBtn');
+  btn.disabled=true; btn.textContent='Registering...';
+
+  // Check if email already in Firestore users
+  if(CACHE.users.find(u=>u.email===email)){
+    showA('regErr','Email already registered.');
+    btn.disabled=false; btn.textContent='Submit Registration';
+    return;
+  }
+
+  createUserWithEmailAndPassword(auth, email, pass)
+    .then(async (cred) => {
+      const newUser = {
+        id: cred.user.uid, name, mobile:mob, email, password: pass,
+        role:'employee', status:'pending', created_at: new Date().toISOString()
+      };
+      await fbSaveOneUser(newUser);
+
+      // Notify admin
+      const notif = { id:'n-'+Date.now(), for:'admin', type:'new_employee',
+        message:`New registration: ${name} (${email}) is waiting for approval.`,
+        read:false, time:new Date().toLocaleString('en-IN') };
+      CACHE.notifications.unshift(notif);
+      await fbSaveNotifications(CACHE.notifications);
+
+      // Sign out immediately — wait for admin approval
+      await signOut(auth);
+
+      showA('regOk','Registration submitted! Wait for admin approval before logging in.','ok');
+      btn.textContent = 'Submitted!';
+      setTimeout(()=>{ showFS('login'); btn.disabled=false; btn.textContent='Submit Registration'; }, 2500);
+    })
+    .catch(err => {
+      let msg = 'Registration failed.';
+      if(err.code==='auth/email-already-in-use') msg='Email already registered.';
+      showA('regErr', msg);
+      btn.disabled=false; btn.textContent='Submit Registration';
+    });
+}
+
+function logout(){
+  if(!confirm('Logout?'))return;
+  signOut(auth).then(()=>{
+    currentUser = null;
+    LS.set('session',null);
+    document.getElementById('appScreen').classList.remove('active');
+    document.getElementById('loginScreen').classList.add('active');
+    document.getElementById('liEmail').value='';
+    document.getElementById('liPass').value='';
+  });
+}
+
+// ================================================================
+//  APP START
+// ================================================================
+function startApp(){
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('appScreen').classList.add('active');
+
+  // Set user info in sidebar
+  document.getElementById('uName').textContent = currentUser.name;
+  document.getElementById('uRole').textContent = currentUser.role==='superadmin'?'Administrator':'Staff';
+  document.getElementById('uAv').textContent   = currentUser.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+
+  buildNav();
+  setGreeting();
+  loadDashboard();
+  loadPicker();
+  loadNotifications();
+
+  // Set bill date
+  document.getElementById('bDate').value = today();
+  clearBill();
+}
+
+function setGreeting(){
+  const h = new Date().getHours();
+  document.getElementById('greet').textContent = h<12?'morning':h<17?'afternoon':'evening';
+  document.getElementById('wbName').textContent = currentUser.name.split(' ')[0];
+  const d = new Date();
+  document.getElementById('wbDate').innerHTML = d.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ================================================================
+//  NAVIGATION
+// ================================================================
+const adminNav = [
+  {page:'dashboard',label:'Dashboard',icon:'<rect x="3" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="1.5"/>'},
+  {page:'billing',label:'New Bill',icon:'<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-width="1.5" stroke-linecap="round"/>'},
+  {page:'bills',label:'All Bills',icon:'<path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-width="1.5" stroke-linecap="round"/>'},
+  {page:'customers',label:'Customers',icon:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'},
+  {page:'employees',label:'Employees',icon:'<circle cx="12" cy="8" r="4" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke-width="1.5" stroke-linecap="round"/>',badge:true},
+  {page:'reports',label:'Reports',icon:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'},
+  {page:'settings',label:'Settings',icon:'<circle cx="12" cy="12" r="3" stroke-width="1.5"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke-width="1.5"/>'},
+];
+
+const empNav = [
+  {page:'dashboard',label:'Dashboard',icon:'<rect x="3" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="1.5"/>'},
+  {page:'billing',label:'New Bill',icon:'<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-width="1.5" stroke-linecap="round"/>'},
+  {page:'bills',label:'My Bills',icon:'<path d="M4 6h16M4 10h16M4 14h16M4 18h7" stroke-width="1.5" stroke-linecap="round"/>'},
+  {page:'customers',label:'Customers',icon:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'},
+];
+
+function buildNav(){
+  const isAdmin = currentUser.role==='superadmin';
+  const navItems = isAdmin ? adminNav : empNav;
+  const pending = isAdmin ? LS.get('users',[]).filter(u=>u.status==='pending').length : 0;
+
+  // Sidebar nav sections
+  let sbHtml = `<div class="sb-label">${isAdmin?'Overview':'Dashboard'}</div>`;
+  navItems.slice(0,1).forEach(n=>{ sbHtml += navBtn(n,pending); });
+  sbHtml += `<div class="sb-label">Operations</div>`;
+  navItems.slice(1,4).forEach(n=>{ sbHtml += navBtn(n,pending); });
+  if(isAdmin){
+    sbHtml += `<div class="sb-label">Management</div>`;
+    navItems.slice(4).forEach(n=>{ sbHtml += navBtn(n,pending); });
+  }
+  document.getElementById('sbnav').innerHTML = sbHtml;
+
+  // Bottom nav — adminNav indices: 0=dashboard,1=billing,2=bills,3=customers,4=employees,5=reports,6=settings
+  const bnItems = isAdmin
+    ? [adminNav[0], adminNav[1], adminNav[2], adminNav[4], adminNav[5]]
+    : empNav.slice(0,3);
+  document.getElementById('bnavInner').innerHTML = bnItems.map(n=>`
+    <div class="bn-item ${n.page==='dashboard'?'active':''}" onclick="showPage('${n.page}')" data-page="${n.page}">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">${n.icon}</svg>
+      ${n.label}
+    </div>
+  `).join('') + (isAdmin ? `
+    <div class="bn-item" onclick="toggleMoreMenu()" id="moreBtn">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg>
+      More
+    </div>
+  ` : `
+    <div class="bn-item" onclick="logout()" style="color:#c0392b;">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Logout
+    </div>
+  `);
+
+  // New bill btn in topbar — hide for employee on non-billing pages (keep simple)
+  document.getElementById('sb-sub').textContent = isAdmin?'Management System':'Employee Portal';
+}
+
+function navBtn(n,pending){
+  const badge = n.badge && pending>0 ? `<span class="nb">${pending}</span>` : '';
+  return `<div class="nav-item ${n.page==='dashboard'?'active':''}" onclick="showPage('${n.page}')" data-page="${n.page}">
+    <svg class="nicon" fill="none" stroke="currentColor" viewBox="0 0 24 24">${n.icon}</svg>
+    ${n.label}${badge}
+  </div>`;
+}
+
+function showPage(name){
+  // Check access
+  if(['employees','services','reports','settings'].includes(name) && currentUser.role!=='superadmin') return;
+
+  document.querySelectorAll('.pv').forEach(el=>el.classList.remove('active'));
+  document.getElementById('pv-'+name)?.classList.add('active');
+
+  document.querySelectorAll('.nav-item,.bn-item').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll(`[data-page="${name}"]`).forEach(el=>el.classList.add('active'));
+
+  const titles={dashboard:'Dashboard',billing:'Create Bill',bills:currentUser.role==='superadmin'?'All Bills':'My Bills',customers:'Customers',employees:'Employees',services:'Services',reports:'Reports',settings:'Settings'};
+  document.getElementById('pageTitle').textContent = titles[name]||name;
+
+  if(name==='bills')      loadBills();
+  if(name==='customers')  loadCustomers();
+  if(name==='employees')  loadEmployees();
+  if(name==='services')   loadServices();
+  if(name==='reports')    loadReports('monthly');
+  if(name==='settings')   loadSettings();
+}
+
+// ================================================================
+//  DASHBOARD
+// ================================================================
+function loadDashboard(){
+  const bills = LS.get('bills',[]);
+  const t     = today();
+  const ms    = monthStart();
+  const isAdmin = currentUser.role==='superadmin';
+
+  const myBills = isAdmin ? bills : bills.filter(b=>b.createdBy===currentUser.id);
+  const todayB  = myBills.filter(b=>b.date===t);
+  const monthB  = myBills.filter(b=>b.date>=ms);
+  const todayRev  = todayB.reduce((s,b)=>s+b.finalAmount,0);
+  const monthRev  = monthB.reduce((s,b)=>s+b.finalAmount,0);
+  const totalCust = LS.get('customers',[]).length;
+  const pendingEmp= isAdmin ? LS.get('users',[]).filter(u=>u.status==='pending').length : 0;
+
+  const statsHtml = isAdmin ? `
+    <div class="stat-card"><div class="stat-lbl">Today Bills</div><div class="stat-val">${todayB.length}</div><div class="stat-note">Bills today</div></div>
+    <div class="stat-card"><div class="stat-lbl">Today Revenue</div><div class="stat-val">${fmt(todayRev)}</div><div class="stat-note">Collected today</div></div>
+    <div class="stat-card"><div class="stat-lbl">Monthly Revenue</div><div class="stat-val">${fmt(monthRev)}</div><div class="stat-note">This month</div></div>
+    <div class="stat-card"><div class="stat-lbl">Total Customers</div><div class="stat-val">${totalCust}</div><div class="stat-note">Registered</div></div>
+    ${pendingEmp>0?`<div class="stat-card" style="cursor:pointer;" onclick="showPage('employees')"><div class="stat-lbl">Pending Approvals</div><div class="stat-val" style="color:var(--amber);">${pendingEmp}</div><div class="stat-note">Click to review</div></div>`:''}
+  ` : `
+    <div class="stat-card"><div class="stat-lbl">My Bills Today</div><div class="stat-val">${todayB.length}</div><div class="stat-note">Created today</div></div>
+    <div class="stat-card"><div class="stat-lbl">Today Revenue</div><div class="stat-val">${fmt(todayRev)}</div><div class="stat-note">From my bills</div></div>
+    <div class="stat-card"><div class="stat-lbl">Monthly Bills</div><div class="stat-val">${monthB.length}</div><div class="stat-note">This month</div></div>
+    <div class="stat-card"><div class="stat-lbl">Monthly Revenue</div><div class="stat-val">${fmt(monthRev)}</div><div class="stat-note">This month</div></div>
+  `;
+  document.getElementById('dashStats').innerHTML = statsHtml;
+
+  const recent = myBills.slice(-10).reverse();
+  const tbody  = document.getElementById('dashBills');
+  if(!recent.length){
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">No bills yet. Create your first bill!</td></tr>';
+    return;
+  }
+  tbody.innerHTML = recent.map(b=>`
+    <tr>
+      <td><strong style="color:var(--gold)">${b.billNumber}</strong></td>
+      <td><div style="font-weight:500;">${b.customerName}</div><div style="font-size:12px;color:var(--ink-faint);">${b.customerMobile}</div></td>
+      <td><strong>${fmt(b.finalAmount)}</strong></td>
+      <td><span class="badge ${b.paymentMode==='cash'?'b-green':'b-gold'}">${cap(b.paymentMode)}</span></td>
+      <td>${b.date}</td>
+    </tr>
+  `).join('');
+}
+
+// ================================================================
+//  BILLING
+// ================================================================
+function addSrow(name='',price=0,qty=1){
+  srowCount++;
+  const id = srowCount;
+  const div = document.createElement('div');
+  div.id = 'sr-'+id;
+  div.style.cssText = 'display:grid;grid-template-columns:1fr 100px 80px 38px;gap:8px;margin-bottom:8px;align-items:end;';
+  div.innerHTML = `
+    <div class="fgroup" style="margin:0;">
+      <label style="font-size:10.5px;">Service</label>
+      <input type="text" value="${name}" placeholder="Service name" style="padding:9px 12px;border:1.5px solid var(--stone-dark);border-radius:8px;font-size:13.5px;font-family:'DM Sans',sans-serif;width:100%;outline:none;" oninput="recalc()">
+    </div>
+    <div class="fgroup" style="margin:0;">
+      <label style="font-size:10.5px;">Price</label>
+      <input type="number" value="${price}" min="0" placeholder="0" style="padding:9px 12px;border:1.5px solid var(--stone-dark);border-radius:8px;font-size:13.5px;font-family:'DM Sans',sans-serif;width:100%;outline:none;" oninput="recalc()">
+    </div>
+    <div class="fgroup" style="margin:0;">
+      <label style="font-size:10.5px;">Qty</label>
+      <input type="number" value="${qty}" min="1" style="padding:9px 12px;border:1.5px solid var(--stone-dark);border-radius:8px;font-size:13.5px;font-family:'DM Sans',sans-serif;width:100%;outline:none;" oninput="recalc()">
+    </div>
+    <button class="srow-del" onclick="rmSrow(${id})">
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  `;
+  document.getElementById('sRows').appendChild(div);
+  recalc();
+}
+
+function rmSrow(id){ document.getElementById('sr-'+id)?.remove(); recalc(); }
+
+function addFromPicker(){
+  const picker = document.getElementById('qPicker');
+  const svc    = LS.get('services',[]).find(s=>s.id===picker.value);
+  if(svc) addSrow(svc.name, svc.price, 1);
+  picker.value = '';
+}
+
+function getSrows(){
+  const rows=[];
+  document.querySelectorAll('#sRows>div').forEach(r=>{
+    const inp = r.querySelectorAll('input');
+    const n=inp[0].value.trim(), p=parseFloat(inp[1].value)||0, q=parseInt(inp[2].value)||1;
+    if(n&&p>0) rows.push({name:n,price:p,qty:q});
+  });
+  return rows;
+}
+
+function recalc(){
+  const items  = getSrows();
+  const sub    = items.reduce((s,i)=>s+i.price*i.qty,0);
+  const disc   = parseFloat(document.getElementById('bDisc').value)||0;
+  const dtype  = document.getElementById('bDiscType').value;
+  const da     = dtype==='percent'?(sub*disc/100):disc;
+  const total  = Math.max(0,sub-da);
+  const S      = getSetting('currency','Rs.');
+  document.getElementById('rSub').textContent   = S+' '+n2(sub);
+  document.getElementById('rDisc').textContent  = S+' '+n2(da);
+  document.getElementById('rTotal').textContent = S+' '+n2(total);
+}
+
+function toggleSplit(){
+  document.getElementById('splitRow').style.display = document.getElementById('bPay').value==='split'?'block':'none';
+}
+
+let cstTimer;
+function custSearch(val, sugId){
+  clearTimeout(cstTimer);
+  const box = document.getElementById(sugId);
+  if(val.length<3){box.style.display='none';return;}
+  cstTimer = setTimeout(()=>{
+    const custs = LS.get('customers',[]).filter(c=>c.name.toLowerCase().includes(val.toLowerCase())||c.mobile.includes(val)).slice(0,8);
+    if(!custs.length){box.style.display='none';return;}
+    box.innerHTML = custs.map(c=>`
+      <div onclick="selectCust('${c.name}','${c.mobile}')" style="padding:9px 13px;cursor:pointer;border-bottom:1px solid var(--stone-dark);font-size:13.5px;" onmouseover="this.style.background='var(--stone)'" onmouseout="this.style.background=''">
+        <strong>${c.name}</strong><span style="color:var(--ink-faint);margin-left:8px;">${c.mobile}</span>
+      </div>
+    `).join('');
+    box.style.display='block';
+  },250);
+}
+
+function selectCust(name,mobile){
+  document.getElementById('bName').value = name;
+  document.getElementById('bMob').value  = mobile;
+  document.getElementById('bSug').style.display='none';
+}
+
+function saveBill(){
+  const name   = document.getElementById('bName').value.trim();
+  const mobile = document.getElementById('bMob').value.trim();
+  const items  = getSrows();
+  const btn    = document.getElementById('saveBillBtn');
+
+  if(!name){showA('bErr','Customer name required.');return;}
+  if(!mobile||mobile.length!==10){showA('bErr','Valid 10-digit mobile required.');return;}
+  if(!items.length){showA('bErr','Add at least one service.');return;}
+
+  btn.disabled=true; btn.textContent='Saving...';
+
+  const settings = getSetting();
+  const sub    = items.reduce((s,i)=>s+i.price*i.qty,0);
+  const disc   = parseFloat(document.getElementById('bDisc').value)||0;
+  const dtype  = document.getElementById('bDiscType').value;
+  const da     = dtype==='percent'?(sub*disc/100):disc;
+  const total  = Math.max(0,sub-da);
+  const pmode  = document.getElementById('bPay').value;
+
+  // Auto-add/update customer
+  const custs = LS.get('customers',[]);
+  const existIdx = custs.findIndex(c=>c.mobile===mobile);
+  const custObj = existIdx>-1
+    ? { ...custs[existIdx], name }
+    : { id:'c-'+Date.now(), name, mobile, email:'', gender:'', created_at:new Date().toISOString(), createdBy:currentUser.id };
+  fbSaveOneCustomer(custObj);
+
+  // Bill counter
+  CACHE.bill_counter = (CACHE.bill_counter||0) + 1;
+  const billNum = `${settings.prefix||'AYS'}-${today().replace(/-/g,'')}-${String(CACHE.bill_counter).padStart(4,'0')}`;
+
+  const bill = {
+    id:'bill-'+Date.now(), billNumber:billNum,
+    customerName:name, customerMobile:mobile,
+    date: document.getElementById('bDate').value,
+    items: items.map(i=>({name:i.name,price:i.price,qty:i.qty,total:i.price*i.qty})),
+    subtotal:sub, discount:disc, discountType:dtype, discountAmt:da,
+    finalAmount:total, paymentMode:pmode,
+    cashAmount: parseFloat(document.getElementById('bCash').value)||0,
+    onlineAmount: parseFloat(document.getElementById('bOnline').value)||0,
+    notes: document.getElementById('bNotes').value,
+    createdBy: currentUser.id, createdByName: currentUser.name,
+    created_at: new Date().toISOString()
+  };
+
+  fbSaveOneBill(bill).then(()=>{
+    lastBillData = bill;
+    showA('bOk',`Bill saved! ${billNum}`,'ok');
+    renderInvoice(bill);
+    openModal('mInvoice');
+    clearBill();
+    loadDashboard();
+    btn.disabled=false; btn.textContent='Save Bill';
+  }).catch(err=>{
+    showA('bErr','Save failed: '+err.message);
+    btn.disabled=false; btn.textContent='Save Bill';
+  });
+}
+
+function clearBill(){
+  document.getElementById('bName').value    = '';
+  document.getElementById('bMob').value     = '';
+  document.getElementById('bNotes').value   = '';
+  document.getElementById('bDisc').value    = '0';
+  document.getElementById('bDate').value    = today();
+  document.getElementById('bPay').value     = 'cash';
+  document.getElementById('bDiscType').value= 'flat';
+  document.getElementById('sRows').innerHTML= '';
+  document.getElementById('splitRow').style.display='none';
+  srowCount=0;
+  addSrow();
+  recalc();
+}
+
+function loadPicker(){
+  const svcs = LS.get('services',[]).filter(s=>s.active);
+  const cats  = [...new Set(svcs.map(s=>s.category||'Other'))];
+  const picker= document.getElementById('qPicker');
+  picker.innerHTML = '<option value="">-- Quick add from service list --</option>';
+  cats.forEach(cat=>{
+    const grp = document.createElement('optgroup');
+    grp.label = cat;
+    svcs.filter(s=>(s.category||'Other')===cat).forEach(s=>{
+      const opt=document.createElement('option');
+      opt.value=s.id; opt.textContent=`${s.name} — ${getSetting('currency','Rs.')} ${n2(s.price)}`;
+      grp.appendChild(opt);
+    });
+    picker.appendChild(grp);
+  });
+}
+
+// ================================================================
+//  INVOICE
+// ================================================================
+function renderInvoice(bill){
+  const S = getSetting('currency','Rs.');
+  const settings = getSetting();
+  document.getElementById('invBody').innerHTML = `
+    <div class="inv-wrap">
+      <div class="inv-header">
+        <div class="inv-salon">${settings.salon_name||'AYS Salon'}</div>
+        <div class="inv-tag">${settings.tagline||'Premium Grooming Studio'}</div>
+        <div class="inv-tag">${settings.phone||'7505484168'}${settings.address?'  |  '+settings.address:''}</div>
+        ${settings.gst?`<div class="inv-tag">GST: ${settings.gst}</div>`:''}
+      </div>
+      <div class="inv-meta">
+        <div class="inv-to">
+          <div class="lbl">Bill To</div>
+          <div class="name">${bill.customerName}</div>
+          <div class="phone">${bill.customerMobile}</div>
+        </div>
+        <div class="inv-num">
+          <div class="lbl">Invoice</div>
+          <div class="bnum">${bill.billNumber}</div>
+          <div class="bdate">${bill.date}</div>
+          <div class="bdate" style="margin-top:2px;">By: ${bill.createdByName}</div>
+        </div>
+      </div>
+      <table class="inv-table">
+        <thead><tr><th style="text-align:left;">Service</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+        <tbody>
+          ${bill.items.map((item,i)=>`
+            <tr>
+              <td>${item.name}</td>
+              <td style="text-align:center;">${item.qty}</td>
+              <td style="text-align:right;">${S} ${n2(item.price)}</td>
+              <td style="text-align:right;font-weight:500;">${S} ${n2(item.total)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      <div class="inv-totals">
+        <div class="inv-totals-inner">
+          <div class="inv-row"><span>Subtotal</span><span>${S} ${n2(bill.subtotal)}</span></div>
+          ${bill.discountAmt>0?`<div class="inv-row"><span>Discount</span><span>- ${S} ${n2(bill.discountAmt)}</span></div>`:''}
+          <div class="inv-total-row"><span>Total</span><span>${S} ${n2(bill.finalAmount)}</span></div>
+          <div class="inv-payment">Payment: <strong>${cap(bill.paymentMode)}</strong></div>
+        </div>
+      </div>
+      ${bill.notes?`<div class="inv-note">Note: ${bill.notes}</div>`:''}
+      <div class="inv-footer">${settings.footer||'Thank you for visiting AYS Salon!'}</div>
+    </div>
+  `;
+}
+
+function shareWA(){
+  if(!lastBillData) return;
+  const b   = lastBillData;
+  const wa  = getSetting('whatsapp','7505484168');
+  const msg = `*${getSetting('salon_name','AYS Salon')} - Invoice*\n\nBill No: ${b.billNumber}\nDate: ${b.date}\nCustomer: ${b.customerName}\n\nServices:\n${b.items.map(i=>`• ${i.name} x${i.qty} = ${getSetting('currency','Rs.')} ${n2(i.total)}`).join('\n')}\n\nTotal: ${getSetting('currency','Rs.')} ${n2(b.finalAmount)}\nPayment: ${cap(b.paymentMode)}\n\n${getSetting('footer','Thank you for visiting AYS Salon!')}`;
+  window.open(`https://wa.me/91${b.customerMobile}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+// ================================================================
+//  ALL BILLS
+// ================================================================
+function loadBills(){
+  const isAdmin = currentUser.role==='superadmin';
+  let bills = LS.get('bills',[]);
+  if(!isAdmin) bills = bills.filter(b=>b.createdBy===currentUser.id);
+
+  const srch  = (document.getElementById('billSrch')?.value||'').toLowerCase();
+  const from  = document.getElementById('bfFrom')?.value||'';
+  const to    = document.getElementById('bfTo')?.value||'';
+
+  if(srch) bills = bills.filter(b=>b.billNumber.toLowerCase().includes(srch)||b.customerName.toLowerCase().includes(srch)||b.customerMobile.includes(srch));
+  if(from) bills = bills.filter(b=>b.date>=from);
+  if(to)   bills = bills.filter(b=>b.date<=to);
+
+  bills = bills.slice().reverse();
+
+  const total = bills.length;
+  const pages = Math.ceil(total/BILLS_PER_PAGE);
+  const start = (currentPage-1)*BILLS_PER_PAGE;
+  const slice = bills.slice(start,start+BILLS_PER_PAGE);
+
+  const tbody = document.getElementById('billsTbody');
+  if(!slice.length){
+    tbody.innerHTML = '<tr><td colspan="8" class="empty">No bills found</td></tr>';
+    document.getElementById('billPages').innerHTML='';
+    return;
+  }
+
+  tbody.innerHTML = slice.map(b=>`
+    <tr>
+      <td><strong style="color:var(--gold);">${b.billNumber}</strong></td>
+      <td><div style="font-weight:500;">${b.customerName}</div><div style="font-size:12px;color:var(--ink-faint);">${b.customerMobile}</div></td>
+      <td><strong>${fmt(b.finalAmount)}</strong></td>
+      <td>${b.discountAmt>0?fmt(b.discountAmt):'-'}</td>
+      <td><span class="badge ${b.paymentMode==='cash'?'b-green':'b-gold'}">${cap(b.paymentMode)}</span></td>
+      <td>${b.date}</td>
+      <td>${b.createdByName||'-'}</td>
+      <td>
+        <div class="flex gap8">
+          <button class="btn btn-out btn-sm" onclick="viewBillById('${b.id}')">View</button>
+          ${isAdmin?`<button class="btn btn-del btn-sm" onclick="deleteBill('${b.id}')">Del</button>`:''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  // Pagination
+  if(pages>1){
+    let pgHtml='';
+    for(let i=1;i<=pages;i++) pgHtml+=`<button class="pg-btn ${i===currentPage?'active':''}" onclick="gotoPage(${i})">${i}</button>`;
+    document.getElementById('billPages').innerHTML=pgHtml;
+  } else { document.getElementById('billPages').innerHTML=''; }
+}
+
+function gotoPage(p){ currentPage=p; loadBills(); }
+
+function viewBillById(id){
+  const bill = LS.get('bills',[]).find(b=>b.id===id);
+  if(!bill) return;
+  lastBillData = bill;
+  renderInvoice(bill);
+  openModal('mInvoice');
+}
+
+function deleteBill(id){
+  if(!confirm('Delete this bill? This cannot be undone.')) return;
+  fbDeleteBill(id).then(()=>{ loadBills(); loadDashboard(); });
+}
+
+function exportBillsCSV(){
+  let bills = LS.get('bills',[]);
+  if(currentUser.role!=='superadmin') bills = bills.filter(b=>b.createdBy===currentUser.id);
+  const rows = [['Bill Number','Customer','Mobile','Amount','Discount','Payment','Date','Employee']];
+  bills.slice().reverse().forEach(b=>rows.push([b.billNumber,b.customerName,b.customerMobile,b.finalAmount,b.discountAmt||0,b.paymentMode,b.date,b.createdByName]));
+  dlCSV(rows,'AYS_Bills_'+today());
+}
+
+// ================================================================
+//  CUSTOMERS
+// ================================================================
+function loadCustomers(){
+  const srch  = (document.getElementById('custSrch')?.value||'').toLowerCase();
+  let custs   = LS.get('customers',[]);
+  if(srch) custs = custs.filter(c=>c.name.toLowerCase().includes(srch)||c.mobile.includes(srch));
+
+  const bills = LS.get('bills',[]);
+  const tbody = document.getElementById('custTbody');
+
+  if(!custs.length){
+    tbody.innerHTML='<tr><td colspan="6" class="empty">No customers found</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = custs.map(c=>{
+    const cb = bills.filter(b=>b.customerMobile===c.mobile);
+    const spent = cb.reduce((s,b)=>s+b.finalAmount,0);
+    const last  = cb.length ? cb.slice(-1)[0].date : null;
+    return `<tr>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.mobile}</td>
+      <td>${cb.length}</td>
+      <td><strong>${fmt(spent)}</strong></td>
+      <td>${last||'-'}</td>
+      <td><button class="btn btn-out btn-sm" onclick="showCustHistory('${c.id}')">History</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function showCustHistory(id){
+  const c     = LS.get('customers',[]).find(x=>x.id===id);
+  if(!c) return;
+  const bills = LS.get('bills',[]).filter(b=>b.customerMobile===c.mobile).slice().reverse();
+  const spent = bills.reduce((s,b)=>s+b.finalAmount,0);
+  const last  = bills.length?bills[0].date:null;
+  const S     = getSetting('currency','Rs.');
+
+  document.getElementById('chTitle').textContent = c.name + ' — History';
+  document.getElementById('chBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px;">
+      <div style="background:var(--stone);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);">Total Visits</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--ink);margin-top:5px;">${bills.length}</div>
+      </div>
+      <div style="background:var(--stone);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);">Total Spent</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--gold);margin-top:5px;">${S} ${n2(spent)}</div>
+      </div>
+      <div style="background:var(--stone);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);">Last Visit</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ink);margin-top:5px;">${last||'Never'}</div>
+      </div>
+    </div>
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);margin-bottom:12px;">Bill History</div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Bill No.</th><th>Amount</th><th>Payment</th><th>Date</th><th>By</th><th></th></tr></thead>
+        <tbody>
+          ${bills.length?bills.map(b=>`
+            <tr>
+              <td><strong style="color:var(--gold);">${b.billNumber}</strong></td>
+              <td>${S} ${n2(b.finalAmount)}</td>
+              <td><span class="badge b-grey">${cap(b.paymentMode)}</span></td>
+              <td>${b.date}</td>
+              <td>${b.createdByName||'-'}</td>
+              <td><button class="btn btn-out btn-sm" onclick="viewBillById('${b.id}');closeModal('mCustHist');">View</button></td>
+            </tr>
+          `).join(''):'<tr><td colspan="6" class="empty">No bills yet</td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  `;
+  openModal('mCustHist');
+}
+
+function addCustomer(){
+  const name   = document.getElementById('cName').value.trim();
+  const mobile = document.getElementById('cMob').value.trim();
+  if(!name||!mobile){showA('custErr','Name and mobile required.');return;}
+  if(mobile.length!==10){showA('custErr','Enter valid 10-digit mobile.');return;}
+
+  const custs = LS.get('customers',[]);
+  if(custs.find(c=>c.mobile===mobile)){showA('custErr','Customer with this mobile already exists.');return;}
+
+  const cust = {id:'c-'+Date.now(),name,mobile,email:document.getElementById('cEmail').value,gender:document.getElementById('cGen').value,created_at:new Date().toISOString(),createdBy:currentUser.id};
+  fbSaveOneCustomer(cust).then(()=>{
+    closeModal('mAddCust');
+    loadCustomers();
+    document.getElementById('cName').value='';
+    document.getElementById('cMob').value='';
+    document.getElementById('cEmail').value='';
+    document.getElementById('cGen').value='';
+  });
+}
+
+// ================================================================
+//  EMPLOYEES
+// ================================================================
+function loadEmployees(){
+  const users = LS.get('users',[]);
+  const tbody = document.getElementById('empTbody');
+  const pending = users.filter(u=>u.status==='pending').length;
+
+  // Update badge
+  document.querySelectorAll('[data-page="employees"] .nb').forEach(el=>{ el.textContent=pending; el.style.display=pending>0?'inline-block':'none'; });
+
+  if(!users.length){
+    tbody.innerHTML='<tr><td colspan="6" class="empty">No employees found</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = users.map(u=>`
+    <tr>
+      <td><strong>${u.name}</strong></td>
+      <td>${u.email}</td>
+      <td>${u.mobile||'-'}</td>
+      <td><span class="sdot ${u.status}">${cap(u.status)}</span></td>
+      <td>${u.created_at?u.created_at.split('T')[0]:'-'}</td>
+      <td>
+        <div class="flex gap8 fw">
+          ${u.status==='pending'?`
+            <button class="btn btn-ok btn-sm" onclick="setEmpStatus('${u.id}','approved')">Approve</button>
+            <button class="btn btn-del btn-sm" onclick="setEmpStatus('${u.id}','rejected')">Reject</button>
+          `:''}
+          ${u.status==='approved'&&u.role!=='superadmin'?`<button class="btn btn-out btn-sm" onclick="setEmpStatus('${u.id}','inactive')">Deactivate</button>`:''}
+          ${u.status==='inactive'?`<button class="btn btn-ok btn-sm" onclick="setEmpStatus('${u.id}','approved')">Activate</button>`:''}
+          ${u.role!=='superadmin'?`<button class="btn btn-del btn-sm" onclick="deleteEmp('${u.id}')">Delete</button>`:''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function setEmpStatus(id,status){
+  const users = LS.get('users',[]);
+  const idx   = users.findIndex(u=>u.id===id);
+  if(idx>-1){
+    users[idx].status=status;
+    fbSaveOneUser(users[idx]).then(()=>{
+      const msg = status==='approved'?'Your AYS Salon account has been approved! You can now login.':`Your registration has been ${status}.`;
+      const notif = {id:'n-'+Date.now(),for:id,type:'status',message:msg,read:false,time:new Date().toLocaleString('en-IN')};
+      CACHE.notifications.unshift(notif);
+      fbSaveNotifications(CACHE.notifications);
+      loadEmployees();
+      buildNav();
+    });
+  }
+}
+
+function deleteEmp(id){
+  if(!confirm('Delete this employee?')) return;
+  CACHE.users = CACHE.users.filter(u=>u.id!==id);
+  fbDelete('users', id).then(()=>loadEmployees());
+}
+
+function createEmployee(){
+  const name  = document.getElementById('eName').value.trim();
+  const email = document.getElementById('eEmail').value.trim();
+  const mob   = document.getElementById('eMob').value.trim();
+  const pass  = document.getElementById('ePass').value.trim();
+  if(!name||!email||!mob||!pass){showA('empErr','All fields required.');return;}
+
+  const users = LS.get('users',[]);
+  if(users.find(u=>u.email===email)){showA('empErr','Email already exists.');return;}
+
+  const btn = document.querySelector('#mAddEmp .btn-dark');
+  if(btn){btn.disabled=true;btn.textContent='Creating...';}
+
+  createUserWithEmailAndPassword(auth, email, pass)
+    .then(async (cred) => {
+      const newUser = {id:cred.user.uid,name,email,mobile:mob,password:pass,role:'employee',status:'approved',created_at:new Date().toISOString()};
+      await fbSaveOneUser(newUser);
+      // Sign back in as admin (creating user signs in as new user)
+      // Re-login current admin
+      await signInWithEmailAndPassword(auth, currentUser.email, currentUser.password);
+      closeModal('mAddEmp');
+      loadEmployees();
+      document.getElementById('eName').value='';
+      document.getElementById('eEmail').value='';
+      document.getElementById('eMob').value='';
+      document.getElementById('ePass').value='';
+      if(btn){btn.disabled=false;btn.textContent='Add Employee';}
+    })
+    .catch(err=>{
+      showA('empErr', err.message);
+      if(btn){btn.disabled=false;btn.textContent='Add Employee';}
+    });
+}
+
+// ================================================================
+//  SERVICES
+// ================================================================
+function loadServices(){
+  const svcs  = LS.get('services',[]);
+  const tbody = document.getElementById('svcTbody');
+  const S     = getSetting('currency','Rs.');
+
+  if(!svcs.length){tbody.innerHTML='<tr><td colspan="6" class="empty">No services found</td></tr>';return;}
+
+  tbody.innerHTML = svcs.map(s=>`
+    <tr>
+      <td><strong>${s.name}</strong></td>
+      <td><span style="background:var(--gold-pale);color:var(--gold-dim);font-size:11.5px;font-weight:500;padding:2px 9px;border-radius:5px;">${s.category||'-'}</span></td>
+      <td><strong>${S} ${n2(s.price)}</strong></td>
+      <td>${s.duration?s.duration+' min':'-'}</td>
+      <td><span class="badge ${s.active?'b-green':'b-grey'}">${s.active?'Active':'Inactive'}</span></td>
+      <td>
+        <div class="flex gap8">
+          <button class="btn btn-out btn-sm" onclick="editSvc('${s.id}')">Edit</button>
+          <button class="btn btn-del btn-sm" onclick="deleteSvc('${s.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openAddSvcModal(){
+  document.getElementById('svcEditId').value='';
+  document.getElementById('svcName').value='';
+  document.getElementById('svcCat').value='';
+  document.getElementById('svcPrice').value='';
+  document.getElementById('svcDur').value='';
+  document.getElementById('svcModalTitle').textContent='Add Service';
+  openModal('mAddSvc');
+}
+
+function editSvc(id){
+  const svc = LS.get('services',[]).find(s=>s.id===id);
+  if(!svc) return;
+  document.getElementById('svcEditId').value=svc.id;
+  document.getElementById('svcName').value=svc.name;
+  document.getElementById('svcCat').value=svc.category||'';
+  document.getElementById('svcPrice').value=svc.price;
+  document.getElementById('svcDur').value=svc.duration||'';
+  document.getElementById('svcModalTitle').textContent='Edit Service';
+  openModal('mAddSvc');
+}
+
+function saveService(){
+  const id    = document.getElementById('svcEditId').value;
+  const name  = document.getElementById('svcName').value.trim();
+  const price = parseFloat(document.getElementById('svcPrice').value)||0;
+  if(!name||!price){showA('svcErr','Name and price required.');return;}
+
+  const svcs = LS.get('services',[]);
+  let svc;
+  if(id){
+    const idx = svcs.findIndex(s=>s.id===id);
+    if(idx>-1){ svcs[idx]={...svcs[idx],name,category:document.getElementById('svcCat').value.trim(),price,duration:parseInt(document.getElementById('svcDur').value)||0}; svc=svcs[idx]; }
+  } else {
+    svc = {id:'svc-'+Date.now(),name,category:document.getElementById('svcCat').value.trim(),price,duration:parseInt(document.getElementById('svcDur').value)||0,active:true};
+    svcs.push(svc);
+  }
+  CACHE.services = svcs;
+  fbSaveOneService(svc).then(()=>{
+    closeModal('mAddSvc');
+    loadServices();
+    loadPicker();
+  });
+}
+
+function deleteSvc(id){
+  if(!confirm('Delete this service?')) return;
+  fbDeleteService(id).then(()=>{ loadServices(); loadPicker(); });
+}
+
+// ================================================================
+//  REPORTS
+// ================================================================
+function loadReports(type){
+  ['D','W','M','Y'].forEach(t=>document.getElementById('rBtn'+t)?.classList.remove('btn-dark'));
+  const tMap={daily:'D',weekly:'W',monthly:'M',yearly:'Y'};
+  document.getElementById('rBtn'+tMap[type])?.classList.add('btn-dark');
+
+  const t   = today();
+  const S   = getSetting('currency','Rs.');
+  let from,to;
+  switch(type){
+    case 'daily':   from=to=t; break;
+    case 'weekly':  from=weekStart(); to=t; break;
+    case 'monthly': from=monthStart(); to=t; break;
+    case 'yearly':  from=yearStart(); to=t; break;
+    default: from=monthStart(); to=t;
+  }
+
+  let bills = LS.get('bills',[]).filter(b=>b.date>=from&&b.date<=to);
+  const totalRev   = bills.reduce((s,b)=>s+b.finalAmount,0);
+  const cashRev    = bills.filter(b=>['cash','split'].includes(b.paymentMode)).reduce((s,b)=>s+(b.paymentMode==='split'?b.cashAmount:b.finalAmount),0);
+  const onlineRev  = bills.filter(b=>['online','split'].includes(b.paymentMode)).reduce((s,b)=>s+(b.paymentMode==='split'?b.onlineAmount:b.finalAmount),0);
+  const totalDisc  = bills.reduce((s,b)=>s+(b.discountAmt||0),0);
+
+  document.getElementById('rptStats').innerHTML = `
+    <div class="stat-card"><div class="stat-lbl">Total Bills</div><div class="stat-val">${bills.length}</div></div>
+    <div class="stat-card"><div class="stat-lbl">Total Revenue</div><div class="stat-val">${S} ${n2(totalRev)}</div></div>
+    <div class="stat-card"><div class="stat-lbl">Cash Collection</div><div class="stat-val">${S} ${n2(cashRev)}</div></div>
+    <div class="stat-card"><div class="stat-lbl">Online Collection</div><div class="stat-val">${S} ${n2(onlineRev)}</div></div>
+  `;
+
+  // Top services
+  const svcMap={};
+  bills.forEach(b=>b.items.forEach(i=>{ if(!svcMap[i.name])svcMap[i.name]={cnt:0,rev:0}; svcMap[i.name].cnt+=i.qty; svcMap[i.name].rev+=i.total; }));
+  const topSvcs = Object.entries(svcMap).sort((a,b)=>b[1].rev-a[1].rev).slice(0,10);
+  const maxSvc  = topSvcs.length?topSvcs[0][1].rev:1;
+  document.getElementById('rptSvcChart').innerHTML = topSvcs.length
+    ? topSvcs.map(([n,v])=>`<div class="cbar-item"><div class="cbar-lbl">${n}</div><div class="cbar-track"><div class="cbar-fill" style="width:${(v.rev/maxSvc*100).toFixed(1)}%"></div></div><div class="cbar-val">${S} ${n2(v.rev)}</div></div>`).join('')
+    : '<div style="color:var(--ink-faint);font-size:13.5px;padding:20px 0;">No data available</div>';
+
+  // Top customers
+  const custMap={};
+  bills.forEach(b=>{ if(!custMap[b.customerMobile])custMap[b.customerMobile]={name:b.customerName,rev:0}; custMap[b.customerMobile].rev+=b.finalAmount; });
+  const topCust = Object.entries(custMap).sort((a,b)=>b[1].rev-a[1].rev).slice(0,10);
+  const maxCust = topCust.length?topCust[0][1].rev:1;
+  document.getElementById('rptCustChart').innerHTML = topCust.length
+    ? topCust.map(([m,v])=>`<div class="cbar-item"><div class="cbar-lbl">${v.name}</div><div class="cbar-track"><div class="cbar-fill" style="width:${(v.rev/maxCust*100).toFixed(1)}%"></div></div><div class="cbar-val">${S} ${n2(v.rev)}</div></div>`).join('')
+    : '<div style="color:var(--ink-faint);font-size:13.5px;padding:20px 0;">No data available</div>';
+
+  // Employee performance
+  const empMap={};
+  bills.forEach(b=>{ if(!empMap[b.createdBy])empMap[b.createdBy]={name:b.createdByName,cnt:0,rev:0}; empMap[b.createdBy].cnt++; empMap[b.createdBy].rev+=b.finalAmount; });
+  const empPerf = Object.values(empMap).sort((a,b)=>b.rev-a.rev);
+  document.getElementById('rptEmpBody').innerHTML = empPerf.length
+    ? empPerf.map(e=>`<tr><td><strong>${e.name}</strong></td><td>${e.cnt}</td><td><strong>${S} ${n2(e.rev)}</strong></td></tr>`).join('')
+    : '<tr><td colspan="3" class="empty">No data</td></tr>';
+
+  rptCache = { bills, totalRev, cashRev, onlineRev, from, to };
+}
+
+function exportRptCSV(){
+  if(!rptCache) return;
+  const S = getSetting('currency','Rs.');
+  const rows = [['Bill Number','Customer','Mobile','Amount','Discount','Payment','Date','Employee']];
+  rptCache.bills.forEach(b=>rows.push([b.billNumber,b.customerName,b.customerMobile,b.finalAmount,b.discountAmt||0,b.paymentMode,b.date,b.createdByName]));
+  dlCSV(rows,'AYS_Report_'+today());
+}
+
+// ================================================================
+//  SETTINGS
+// ================================================================
+function loadSettings(){
+  const s = getSetting();
+  document.getElementById('set_salon_name').value = s.salon_name||'';
+  document.getElementById('set_phone').value      = s.phone||'';
+  document.getElementById('set_email').value      = s.email||'';
+  document.getElementById('set_whatsapp').value   = s.whatsapp||'';
+  document.getElementById('set_address').value    = s.address||'';
+  document.getElementById('set_tagline').value    = s.tagline||'';
+  document.getElementById('set_prefix').value     = s.prefix||'';
+  document.getElementById('set_currency').value   = s.currency||'Rs.';
+  document.getElementById('set_gst').value        = s.gst||'';
+  document.getElementById('set_gst_pct').value    = s.gst_pct||'0';
+  document.getElementById('set_footer').value     = s.footer||'';
+}
+
+function saveSettings(){
+  const s = {
+    salon_name: document.getElementById('set_salon_name').value.trim(),
+    phone:      document.getElementById('set_phone').value.trim(),
+    email:      document.getElementById('set_email').value.trim(),
+    whatsapp:   document.getElementById('set_whatsapp').value.trim(),
+    address:    document.getElementById('set_address').value.trim(),
+    tagline:    document.getElementById('set_tagline').value.trim(),
+    prefix:     document.getElementById('set_prefix').value.trim(),
+    currency:   document.getElementById('set_currency').value.trim(),
+    gst:        document.getElementById('set_gst').value.trim(),
+    gst_pct:    document.getElementById('set_gst_pct').value.trim(),
+    footer:     document.getElementById('set_footer').value.trim(),
+  };
+  fbSaveSettings(s).then(()=>{
+    showA('setOk','Settings saved successfully.','ok');
+    loadPicker();
+  });
+}
+
+function getSetting(key,def){
+  const s = LS.get('settings',DEFAULT_SETTINGS);
+  if(key) return s[key]!==undefined?s[key]:def;
+  return {...DEFAULT_SETTINGS,...s};
+}
+
+// ================================================================
+//  NOTIFICATIONS
+// ================================================================
+function loadNotifications(){
+  const notifs  = LS.get('notifications',[]).filter(n=>!n.for||n.for==='admin');
+  const unread  = notifs.filter(n=>!n.read).length;
+  document.getElementById('ndDot').style.display = unread>0?'block':'none';
+
+  document.getElementById('ndList').innerHTML = notifs.length
+    ? notifs.slice(0,15).map(n=>`
+        <div class="nd-item ${!n.read?'unread':''}">
+          <div>${n.message}</div>
+          <div class="nd-time">${n.time||''}</div>
+        </div>
+      `).join('')
+    : '<div class="nd-item" style="color:var(--ink-faint);">No notifications</div>';
+}
+
+function markAllRead(){
+  const notifs = LS.get('notifications',[]).map(n=>({...n,read:true}));
+  CACHE.notifications = notifs;
+  fbSaveNotifications(notifs);
+  document.getElementById('ndDot').style.display='none';
+  loadNotifications();
+}
+
+function toggleND(){
+  document.getElementById('ndDrop').classList.toggle('open');
+}
+
+// ================================================================
+//  UTILITIES
+// ================================================================
+function today(){ return new Date().toISOString().split('T')[0]; }
+function weekStart(){ const d=new Date(); d.setDate(d.getDate()-d.getDay()+1); return d.toISOString().split('T')[0]; }
+function monthStart(){ const d=new Date(); d.setDate(1); return d.toISOString().split('T')[0]; }
+function yearStart(){ return new Date().getFullYear()+'-01-01'; }
+
+function fmt(n){
+  const S = getSetting('currency','Rs.');
+  return S+' '+n2(n);
+}
+function n2(n){ return parseFloat(n||0).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:2}); }
+function cap(s){ return s?s.charAt(0).toUpperCase()+s.slice(1):''; }
+
+function showA(id,msg,type='err'){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.textContent=msg;
+  el.className=`alert-box ${type} show`;
+  setTimeout(()=>el.classList.remove('show'),5000);
+}
+
+function toggleMoreMenu(){
+  const menu    = document.getElementById('moreMenu');
+  const overlay = document.getElementById('moreOverlay');
+  const isOpen  = menu.style.display === 'block';
+  menu.style.display    = isOpen ? 'none' : 'block';
+  overlay.style.display = isOpen ? 'none' : 'block';
+  const btn = document.getElementById('moreBtn');
+  if(btn) btn.style.color = isOpen ? '' : 'var(--gold)';
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function dlCSV(rows,fname){
+  const csv  = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = fname+'.csv';
+  a.click();
+}
+
+// ================================================================
+//  STARTUP
+// ================================================================
+document.addEventListener('DOMContentLoaded', async ()=>{
+  await initData();
+
+  // Auto-login from session
+  const sid = LS.get('session', null);
+  if(sid){
+    const user = CACHE.users.find(u=>u.id===sid && u.status==='approved');
+    if(user){ currentUser=user; startApp(); return; }
+  }
+
+  // Enter key login
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      if(document.getElementById('fs-login').classList.contains('active')) doLogin();
+      else if(document.getElementById('fs-register').classList.contains('active')) doRegister();
+    }
+  });
+});
+
+// Close notif on outside click
+document.addEventListener('click',e=>{
+  const btn  = document.getElementById('ndBtn');
+  const drop = document.getElementById('ndDrop');
+  if(btn&&!btn.contains(e.target)&&drop&&!drop.contains(e.target)) drop.classList.remove('open');
+  // Close customer suggestions on outside click
+  document.querySelectorAll('[id$="Sug"]').forEach(box=>{
+    if(!box.contains(e.target)) box.style.display='none';
+  });
+});
+
+// Make functions globally accessible (needed for inline onclick handlers)
+window.doLogin=doLogin; window.doRegister=doRegister; window.logout=logout;
+window.showFS=showFS; window.showPage=showPage; window.startApp=startApp;
+window.saveBill=saveBill; window.clearBill=clearBill; window.addSrow=addSrow;
+window.rmSrow=rmSrow; window.recalc=recalc; window.toggleSplit=toggleSplit;
+window.addFromPicker=addFromPicker; window.custSearch=custSearch; window.selectCust=selectCust;
+window.loadBills=loadBills; window.viewBillById=viewBillById; window.deleteBill=deleteBill;
+window.exportBillsCSV=exportBillsCSV; window.gotoPage=gotoPage;
+window.loadCustomers=loadCustomers; window.addCustomer=addCustomer; window.showCustHistory=showCustHistory;
+window.loadEmployees=loadEmployees; window.setEmpStatus=setEmpStatus;
+window.deleteEmp=deleteEmp; window.createEmployee=createEmployee;
+window.loadServices=loadServices; window.openAddSvcModal=openAddSvcModal;
+window.editSvc=editSvc; window.saveService=saveService; window.deleteSvc=deleteSvc;
+window.loadReports=loadReports; window.exportRptCSV=exportRptCSV;
+window.loadSettings=loadSettings; window.saveSettings=saveSettings;
+window.openModal=openModal; window.closeModal=closeModal;
+window.toggleND=toggleND; window.markAllRead=markAllRead; window.toggleMoreMenu=toggleMoreMenu;
+window.shareWA=shareWA; window.printInvoice=()=>window.print();
+</script>
+</body>
+</html>
